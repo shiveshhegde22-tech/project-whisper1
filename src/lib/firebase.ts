@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBBV94Nt0OT-xITA9zknNkPyj4tv3xnvJg",
@@ -11,8 +12,11 @@ const firebaseConfig = {
   measurementId: "G-QZ0TFRB11R"
 };
 
-// Initialize Firebase (only for authentication)
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firestore
+export const db = getFirestore(app);
 
 // Initialize Analytics (only in browser)
 export const initAnalytics = async () => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Submission, getSubmissions, getSubmissionStats } from '@/lib/submissionsService';
+import { Submission, getFirebaseSubmissions, getFirebaseSubmissionStats } from '@/lib/firebaseSubmissionsService';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { SubmissionsChart } from '@/components/dashboard/SubmissionsChart';
 import { ProjectTypeChart } from '@/components/analytics/ProjectTypeChart';
@@ -14,7 +14,7 @@ export default function Analytics() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getSubmissions();
+        const data = await getFirebaseSubmissions();
         setSubmissions(data);
       } catch (error) {
         console.error('Error fetching submissions:', error);
@@ -33,7 +33,7 @@ export default function Analytics() {
     );
   }
 
-  const stats = getSubmissionStats(submissions);
+  const stats = getFirebaseSubmissionStats(submissions);
   const weeklyData = generateWeeklyData(submissions);
   const projectTypeCounts = generateProjectTypeCounts(submissions);
   const budgetCounts = generateBudgetCounts(submissions);

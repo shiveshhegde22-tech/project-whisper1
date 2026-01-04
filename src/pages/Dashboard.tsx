@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Submission, getSubmissions, getSubmissionStats, updateSubmissionStatus, updateSubmissionNotes } from '@/lib/submissionsService';
+import { Submission, getFirebaseSubmissions, getFirebaseSubmissionStats, updateFirebaseSubmissionStatus, updateFirebaseSubmissionNotes } from '@/lib/firebaseSubmissionsService';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { RecentSubmissions } from '@/components/dashboard/RecentSubmissions';
 import { SubmissionsChart } from '@/components/dashboard/SubmissionsChart';
@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   const fetchSubmissions = async () => {
     try {
-      const data = await getSubmissions();
+      const data = await getFirebaseSubmissions();
       setSubmissions(data);
     } catch (error) {
       console.error('Error fetching submissions:', error);
@@ -34,7 +34,7 @@ export default function Dashboard() {
     fetchSubmissions();
   }, []);
 
-  const stats = getSubmissionStats(submissions);
+  const stats = getFirebaseSubmissionStats(submissions);
   const weeklyData = generateWeeklyData(submissions);
 
   // Calculate response rate
@@ -43,7 +43,7 @@ export default function Dashboard() {
 
   const handleStatusChange = async (id: string, newStatus: Submission['status']) => {
     try {
-      await updateSubmissionStatus(id, newStatus);
+      await updateFirebaseSubmissionStatus(id, newStatus);
       setSubmissions(prev => prev.map(sub => 
         sub.id === id ? { ...sub, status: newStatus } : sub
       ));
@@ -67,7 +67,7 @@ export default function Dashboard() {
     try {
       const submission = submissions.find(s => s.id === id);
       const notes = submission?.notes ? `${submission.notes}\n${note}` : note;
-      await updateSubmissionNotes(id, notes);
+      await updateFirebaseSubmissionNotes(id, notes);
       setSubmissions(prev => prev.map(sub => 
         sub.id === id ? { ...sub, notes } : sub
       ));
