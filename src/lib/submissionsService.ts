@@ -1,13 +1,4 @@
-import { 
-  collection, 
-  getDocs, 
-  updateDoc, 
-  doc,
-  query,
-  orderBy,
-  Timestamp
-} from "firebase/firestore";
-import { db } from "./firebase";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Submission {
   id: string;
@@ -22,35 +13,56 @@ export interface Submission {
   notes?: string;
 }
 
-const COLLECTION_NAME = "submissions";
-
 // Get all submissions
 export const getSubmissions = async (): Promise<Submission[]> => {
-  try {
-    const q = query(collection(db, COLLECTION_NAME), orderBy("submittedAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      submittedAt: doc.data().submittedAt?.toDate() || new Date()
-    })) as Submission[];
-  } catch (error) {
+  const { data, error } = await supabase
+    .from('submissions')
+    .select('*')
+    .order('submitted_at', { ascending: false });
+  
+  if (error) {
     console.error("Error fetching submissions:", error);
     return [];
   }
+  
+  return (data || []).map(item => ({
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    phone: item.phone,
+    projectType: item.project_type,
+    budgetRange: item.budget_range,
+    projectDetails: item.project_details || '',
+    status: item.status as 'new' | 'replied' | 'archived',
+    submittedAt: new Date(item.submitted_at),
+    notes: item.notes || undefined
+  }));
 };
 
 // Update submission status
 export const updateSubmissionStatus = async (id: string, status: Submission['status']): Promise<void> => {
-  const docRef = doc(db, COLLECTION_NAME, id);
-  await updateDoc(docRef, { status });
+  const { error } = await supabase
+    .from('submissions')
+    .update({ status })
+    .eq('id', id);
+  
+  if (error) {
+    console.error("Error updating status:", error);
+    throw new Error("Failed to update submission status.");
+  }
 };
 
 // Update submission notes
 export const updateSubmissionNotes = async (id: string, notes: string): Promise<void> => {
-  const docRef = doc(db, COLLECTION_NAME, id);
-  await updateDoc(docRef, { notes });
+  const { error } = await supabase
+    .from('submissions')
+    .update({ notes })
+    .eq('id', id);
+  
+  if (error) {
+    console.error("Error updating notes:", error);
+    throw new Error("Failed to update submission notes.");
+  }
 };
 
 // Get submission stats

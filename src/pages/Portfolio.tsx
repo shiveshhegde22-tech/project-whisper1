@@ -65,7 +65,7 @@ export default function Portfolio() {
     if (!deleteItem?.id) return;
     
     try {
-      await deletePortfolioItem(deleteItem.id, deleteItem.imagePath);
+      await deletePortfolioItem(deleteItem.id);
       toast({ title: "Portfolio item deleted successfully!" });
       fetchItems();
     } catch (error) {
