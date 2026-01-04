@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,27 +6,76 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Bell, Mail, Shield, Palette, Download, Loader2 } from 'lucide-react';
-import { getSubmissions } from '@/lib/submissionsService';
+import { getFirebaseSubmissions } from '@/lib/firebaseSubmissionsService';
+import { getFirebaseSettings, saveFirebaseSettings, AppSettings } from '@/lib/firebaseSettingsService';
 import * as XLSX from 'xlsx';
 
 export default function Settings() {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [instantAlerts, setInstantAlerts] = useState(false);
   const [dailyDigest, setDailyDigest] = useState(true);
-  const [isExporting, setIsExporting] = useState(false);
+  const [notificationEmail, setNotificationEmail] = useState("kdmistryinteriors@yahoo.com");
+  const [ccEmail, setCcEmail] = useState("");
+  const [statusLabels, setStatusLabels] = useState({
+    new: "New",
+    replied: "Replied",
+    archived: "Archived"
+  });
 
-  const handleSave = () => {
-    toast({
-      title: "Settings saved",
-      description: "Your preferences have been updated",
-    });
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getFirebaseSettings();
+        setEmailNotifications(settings.emailNotifications);
+        setInstantAlerts(settings.instantAlerts);
+        setDailyDigest(settings.dailyDigest);
+        setNotificationEmail(settings.notificationEmail);
+        setCcEmail(settings.ccEmail);
+        setStatusLabels(settings.statusLabels);
+      } catch (error) {
+        console.error("Error loading settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await saveFirebaseSettings({
+        emailNotifications,
+        instantAlerts,
+        dailyDigest,
+        notificationEmail,
+        ccEmail,
+        statusLabels
+      });
+      toast({
+        title: "Settings saved",
+        description: "Your preferences have been updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save settings.",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleExportExcel = async () => {
     setIsExporting(true);
     try {
-      const submissions = await getSubmissions();
+      const submissions = await getFirebaseSubmissions();
       
       const exportData = submissions.map(s => ({
         'Date': s.submittedAt.toLocaleDateString(),
@@ -60,6 +109,14 @@ export default function Settings() {
       setIsExporting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-2xl">
@@ -142,7 +199,8 @@ export default function Settings() {
               id="notification-email"
               type="email"
               placeholder="you@example.com"
-              defaultValue="kdmistryinteriors@yahoo.com"
+              value={notificationEmail}
+              onChange={(e) => setNotificationEmail(e.target.value)}
             />
           </div>
 
@@ -152,6 +210,8 @@ export default function Settings() {
               id="cc-email"
               type="email"
               placeholder="team@example.com"
+              value={ccEmail}
+              onChange={(e) => setCcEmail(e.target.value)}
             />
           </div>
         </div>
@@ -174,15 +234,27 @@ export default function Settings() {
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-green-500 flex-shrink-0" />
-            <Input defaultValue="New" className="flex-1" />
+            <Input 
+              value={statusLabels.new} 
+              onChange={(e) => setStatusLabels(prev => ({ ...prev, new: e.target.value }))}
+              className="flex-1" 
+            />
           </div>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0" />
-            <Input defaultValue="Replied" className="flex-1" />
+            <Input 
+              value={statusLabels.replied} 
+              onChange={(e) => setStatusLabels(prev => ({ ...prev, replied: e.target.value }))}
+              className="flex-1" 
+            />
           </div>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-gray-400 flex-shrink-0" />
-            <Input defaultValue="Archived" className="flex-1" />
+            <Input 
+              value={statusLabels.archived} 
+              onChange={(e) => setStatusLabels(prev => ({ ...prev, archived: e.target.value }))}
+              className="flex-1" 
+            />
           </div>
         </div>
       </div>
@@ -228,8 +300,15 @@ export default function Settings() {
 
       {/* Save Button */}
       <div className="flex justify-end pb-4">
-        <Button onClick={handleSave} size="lg" className="w-full sm:w-auto">
-          Save Changes
+        <Button onClick={handleSave} size="lg" className="w-full sm:w-auto" disabled={saving}>
+          {saving ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </Button>
       </div>
     </div>

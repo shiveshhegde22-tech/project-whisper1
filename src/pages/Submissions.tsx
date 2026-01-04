@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Submission, getSubmissions, updateSubmissionStatus, updateSubmissionNotes } from '@/lib/submissionsService';
+import { Submission, getFirebaseSubmissions, updateFirebaseSubmissionStatus, updateFirebaseSubmissionNotes } from '@/lib/firebaseSubmissionsService';
 import { SubmissionsTable } from '@/components/submissions/SubmissionsTable';
 import { SubmissionDetailModal } from '@/components/dashboard/SubmissionDetailModal';
 import { useToast } from '@/hooks/use-toast';
@@ -13,7 +13,7 @@ export default function Submissions() {
 
   const fetchSubmissions = async () => {
     try {
-      const data = await getSubmissions();
+      const data = await getFirebaseSubmissions();
       setSubmissions(data);
     } catch (error) {
       console.error('Error fetching submissions:', error);
@@ -33,7 +33,7 @@ export default function Submissions() {
 
   const handleStatusChange = async (id: string, newStatus: Submission['status']) => {
     try {
-      await updateSubmissionStatus(id, newStatus);
+      await updateFirebaseSubmissionStatus(id, newStatus);
       setSubmissions(prev => prev.map(sub => 
         sub.id === id ? { ...sub, status: newStatus } : sub
       ));
@@ -57,7 +57,7 @@ export default function Submissions() {
     try {
       const submission = submissions.find(s => s.id === id);
       const notes = submission?.notes ? `${submission.notes}\n${note}` : note;
-      await updateSubmissionNotes(id, notes);
+      await updateFirebaseSubmissionNotes(id, notes);
       setSubmissions(prev => prev.map(sub => 
         sub.id === id ? { ...sub, notes } : sub
       ));
