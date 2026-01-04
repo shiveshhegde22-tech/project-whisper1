@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Submission } from '@/lib/submissionsService';
 import { StatusBadge } from '@/components/dashboard/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSearch } from '@/contexts/SearchContext';
 import { 
   Select,
   SelectContent,
@@ -29,9 +30,19 @@ interface SubmissionsTableProps {
 }
 
 export function SubmissionsTable({ submissions, onViewSubmission }: SubmissionsTableProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const { searchQuery: globalSearchQuery, setSearchQuery: setGlobalSearchQuery } = useSearch();
+  const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'all'>('all');
   const [projectTypeFilter, setProjectTypeFilter] = useState<string>('all');
+
+  // Sync local search with global search
+  useEffect(() => {
+    if (globalSearchQuery) {
+      setLocalSearchQuery(globalSearchQuery);
+    }
+  }, [globalSearchQuery]);
+
+  const searchQuery = localSearchQuery || globalSearchQuery;
 
   const projectTypes = useMemo(() => {
     return Array.from(new Set(submissions.map(s => s.projectType)));
@@ -75,7 +86,8 @@ export function SubmissionsTable({ submissions, onViewSubmission }: SubmissionsT
   };
 
   const clearFilters = () => {
-    setSearchQuery('');
+    setLocalSearchQuery('');
+    setGlobalSearchQuery('');
     setStatusFilter('all');
     setProjectTypeFilter('all');
   };
@@ -91,8 +103,11 @@ export function SubmissionsTable({ submissions, onViewSubmission }: SubmissionsT
           <Input
             type="search"
             placeholder="Search by name or email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={localSearchQuery}
+            onChange={(e) => {
+              setLocalSearchQuery(e.target.value);
+              setGlobalSearchQuery(e.target.value);
+            }}
             className="pl-9"
           />
         </div>

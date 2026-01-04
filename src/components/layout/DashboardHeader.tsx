@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useSearch } from '@/contexts/SearchContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, onSnapshot, limit } from 'firebase/firestore';
@@ -31,8 +32,18 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
   const { user, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { searchQuery, setSearchQuery } = useSearch();
   const [newSubmissions, setNewSubmissions] = useState<Submission[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    // Navigate to submissions page if not already there
+    if (value && location.pathname !== '/submissions') {
+      navigate('/submissions');
+    }
+  };
 
   // Real-time listener for new submissions
   useEffect(() => {
@@ -133,6 +144,8 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
           <Input
             type="search"
             placeholder="Search submissions..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-9 w-48 xl:w-64 bg-background/50"
           />
         </div>
