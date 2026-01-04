@@ -5,19 +5,60 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, Mail, Shield, Palette } from 'lucide-react';
+import { Bell, Mail, Shield, Palette, Download, Loader2 } from 'lucide-react';
+import { getSubmissions } from '@/lib/submissionsService';
+import * as XLSX from 'xlsx';
 
 export default function Settings() {
   const { toast } = useToast();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [instantAlerts, setInstantAlerts] = useState(false);
   const [dailyDigest, setDailyDigest] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleSave = () => {
     toast({
       title: "Settings saved",
       description: "Your preferences have been updated",
     });
+  };
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const submissions = await getSubmissions();
+      
+      const exportData = submissions.map(s => ({
+        'Date': s.submittedAt.toLocaleDateString(),
+        'Name': s.name,
+        'Email': s.email,
+        'Phone': s.phone,
+        'Project Type': s.projectType,
+        'Budget Range': s.budgetRange,
+        'Status': s.status,
+        'Project Details': s.projectDetails,
+        'Notes': s.notes || ''
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions');
+      
+      XLSX.writeFile(workbook, `submissions_${new Date().toISOString().split('T')[0]}.xlsx`);
+      
+      toast({
+        title: "Export successful",
+        description: `Exported ${submissions.length} submissions to Excel`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "Could not export data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -146,25 +187,41 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Security */}
+      {/* Data Export */}
       <div className="card-elevated p-6 space-y-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-primary" />
+            <Download className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold">Security</h3>
-            <p className="text-sm text-muted-foreground">Account security settings</p>
+            <h3 className="font-display text-lg font-semibold">Data Export</h3>
+            <p className="text-sm text-muted-foreground">Export all submissions data</p>
           </div>
         </div>
 
         <Separator />
 
         <div className="space-y-4">
-          <Button variant="outline">Change Password</Button>
-          <p className="text-xs text-muted-foreground">
-            Last password change: Never
+          <p className="text-sm text-muted-foreground">
+            Download all submissions data as an Excel file including contact details, project information, and notes.
           </p>
+          <Button 
+            onClick={handleExportExcel} 
+            disabled={isExporting}
+            variant="outline"
+          >
+            {isExporting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 mr-2" />
+                Export to Excel
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
