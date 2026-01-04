@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getFirebaseSubmissions, Submission } from '@/lib/firebaseSubmissionsService';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +14,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
@@ -20,6 +28,22 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHeaderProps) {
   const { user, logout } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [newSubmissions, setNewSubmissions] = useState<Submission[]>([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+
+  useEffect(() => {
+    const loadNewSubmissions = async () => {
+      try {
+        const submissions = await getFirebaseSubmissions();
+        const newOnes = submissions.filter(s => s.status === 'new').slice(0, 5);
+        setNewSubmissions(newOnes);
+      } catch (error) {
+        console.error("Error loading submissions:", error);
+      }
+    };
+    loadNewSubmissions();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -35,6 +59,11 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
         variant: "destructive"
       });
     }
+  };
+
+  const handleViewSubmission = (id: string) => {
+    setNotificationOpen(false);
+    navigate('/submissions');
   };
 
   const userInitials = user?.displayName
@@ -74,10 +103,66 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
             className="pl-9 w-48 xl:w-64 bg-background/50"
           />
         </div>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10">
-          <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
-        </Button>
+        
+        <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10">
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+              {newSubmissions.length > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-80 p-0">
+            <div className="p-3 border-b border-border">
+              <h4 className="font-semibold text-sm">Notifications</h4>
+              <p className="text-xs text-muted-foreground">
+                {newSubmissions.length} new submission{newSubmissions.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="max-h-64 overflow-y-auto">
+              {newSubmissions.length === 0 ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  No new submissions
+                </div>
+              ) : (
+                newSubmissions.map((submission) => (
+                  <button
+                    key={submission.id}
+                    onClick={() => handleViewSubmission(submission.id)}
+                    className="w-full p-3 hover:bg-muted/50 border-b border-border last:border-0 text-left transition-colors"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{submission.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{submission.projectType}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {submission.submittedAt.toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+            {newSubmissions.length > 0 && (
+              <div className="p-2 border-t border-border">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full text-xs"
+                  onClick={() => {
+                    setNotificationOpen(false);
+                    navigate('/submissions');
+                  }}
+                >
+                  View all submissions
+                </Button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
