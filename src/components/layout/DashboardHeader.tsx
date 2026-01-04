@@ -1,9 +1,7 @@
-import { Menu, Bell, Search, LogOut } from 'lucide-react';
+import { Menu, Bell, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { useSearch } from '@/contexts/SearchContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
@@ -32,18 +30,8 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
   const { user, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { searchQuery, setSearchQuery } = useSearch();
   const [newSubmissions, setNewSubmissions] = useState<Submission[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
-
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    // Navigate to submissions page if not already there
-    if (value && location.pathname !== '/submissions') {
-      navigate('/submissions');
-    }
-  };
 
   // Real-time listener for new submissions
   useEffect(() => {
@@ -139,16 +127,6 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-        <div className="relative hidden lg:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search submissions..."
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9 w-48 xl:w-64 bg-background/50"
-          />
-        </div>
         
         <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
           <PopoverTrigger asChild>
