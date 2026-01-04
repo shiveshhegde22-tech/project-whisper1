@@ -24,13 +24,13 @@ export interface Submission {
   notes?: string;
 }
 
-const COLLECTION_NAME = "submissions";
+const COLLECTION_NAME = "contacts";
 
 // Get all submissions from Firestore
 export const getFirebaseSubmissions = async (): Promise<Submission[]> => {
   try {
     const submissionsRef = collection(db, COLLECTION_NAME);
-    const q = query(submissionsRef, orderBy("submittedAt", "desc"));
+    const q = query(submissionsRef, orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
     
     return querySnapshot.docs.map(docSnap => {
@@ -41,10 +41,10 @@ export const getFirebaseSubmissions = async (): Promise<Submission[]> => {
         email: data.email || '',
         phone: data.phone || '',
         projectType: data.projectType || '',
-        budgetRange: data.budgetRange || '',
-        projectDetails: data.projectDetails || '',
+        budgetRange: data.budget || data.budgetRange || '',
+        projectDetails: data.message || data.projectDetails || '',
         status: (data.status as 'new' | 'replied' | 'archived') || 'new',
-        submittedAt: data.submittedAt?.toDate?.() || new Date(data.submittedAt) || new Date(),
+        submittedAt: data.createdAt?.toDate?.() || new Date(data.createdAt) || new Date(),
         notes: data.notes || undefined
       };
     });
@@ -59,8 +59,15 @@ export const addFirebaseSubmission = async (submission: Omit<Submission, 'id'>):
   try {
     const submissionsRef = collection(db, COLLECTION_NAME);
     const docRef = await addDoc(submissionsRef, {
-      ...submission,
-      submittedAt: Timestamp.fromDate(submission.submittedAt)
+      name: submission.name,
+      email: submission.email,
+      phone: submission.phone,
+      projectType: submission.projectType,
+      budget: submission.budgetRange,
+      message: submission.projectDetails,
+      status: submission.status,
+      createdAt: Timestamp.fromDate(submission.submittedAt),
+      notes: submission.notes
     });
     return docRef.id;
   } catch (error) {
