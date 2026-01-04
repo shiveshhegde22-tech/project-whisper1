@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,17 +19,41 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>(editItem?.imageUrl || '');
+  const [imagePreview, setImagePreview] = useState<string>('');
   const [formData, setFormData] = useState({
-    title: editItem?.title || '',
-    roomType: editItem?.roomType || '',
-    projectType: editItem?.projectType || '',
-    budgetRange: editItem?.budgetRange || ''
+    title: '',
+    roomType: '',
+    projectType: '',
+    budgetRange: ''
   });
+
+  // Reset form when modal opens or editItem changes
+  useEffect(() => {
+    if (isOpen) {
+      setImagePreview(editItem?.imageUrl || '');
+      setImageFile(null);
+      setFormData({
+        title: editItem?.title || '',
+        roomType: editItem?.roomType || '',
+        projectType: editItem?.projectType || '',
+        budgetRange: editItem?.budgetRange || ''
+      });
+    }
+  }, [isOpen, editItem]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -44,7 +68,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
     
     if (!editItem && !imageFile) {
       toast({
-        title: "Image required",
+        title: "Image Required",
         description: "Please upload an image for the portfolio item.",
         variant: "destructive"
       });
@@ -53,7 +77,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
     if (!formData.title || !formData.roomType || !formData.projectType || !formData.budgetRange) {
       toast({
-        title: "Missing fields",
+        title: "Missing Fields",
         description: "Please fill in all required fields.",
         variant: "destructive"
       });
@@ -66,6 +90,11 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
       let imagePath = editItem?.imagePath || '';
 
       if (imageFile) {
+        toast({
+          title: "Uploading image...",
+          description: "Please wait while your image is being uploaded."
+        });
+        
         const result = await uploadImage(imageFile);
         imageUrl = result.url;
         imagePath = result.path;
@@ -82,19 +111,43 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
       if (editItem?.id) {
         await updatePortfolioItem(editItem.id, itemData);
-        toast({ title: "Portfolio item updated successfully!" });
+        toast({ 
+          title: "Success! ✓",
+          description: "Portfolio item updated successfully."
+        });
       } else {
         await addPortfolioItem(itemData);
-        toast({ title: "Portfolio item added successfully!" });
+        toast({ 
+          title: "Success! ✓",
+          description: "Portfolio item added successfully."
+        });
       }
 
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving portfolio item:', error);
+      
+      // Provide specific error messages based on error type
+      let errorMessage = "Failed to save portfolio item. Please try again.";
+      
+      if (error?.code === 'storage/unauthorized') {
+        errorMessage = "Permission denied. Please check Firebase Storage rules.";
+      } else if (error?.code === 'storage/canceled') {
+        errorMessage = "Upload was cancelled.";
+      } else if (error?.code === 'storage/unknown') {
+        errorMessage = "Upload failed. Please check your internet connection.";
+      } else if (error?.message?.includes('not exist') || error?.code === 'not-found') {
+        errorMessage = "Database not found. Please create Firestore database in Firebase Console.";
+      } else if (error?.message?.includes('permission-denied') || error?.code === 'permission-denied') {
+        errorMessage = "Permission denied. Please update Firestore security rules.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to save portfolio item. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -109,6 +162,9 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
           <DialogTitle className="font-display text-xl">
             {editItem ? 'Edit Portfolio Item' : 'Add Portfolio Item'}
           </DialogTitle>
+          <DialogDescription>
+            {editItem ? 'Update the details of your portfolio project.' : 'Add a new project to showcase in your portfolio.'}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -206,7 +262,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
             </Select>
           </div>
 
-          <DialogFooter>
+          <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
               Cancel
             </Button>
@@ -220,7 +276,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
                 editItem ? 'Update' : 'Add Item'
               )}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
