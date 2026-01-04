@@ -87,7 +87,6 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
     setLoading(true);
     try {
       let imageUrl = editItem?.imageUrl || '';
-      let imagePath = editItem?.imagePath || '';
 
       if (imageFile) {
         toast({
@@ -97,7 +96,6 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
         
         const result = await uploadImage(imageFile);
         imageUrl = result.url;
-        imagePath = result.path;
       }
 
       const itemData = {
@@ -105,8 +103,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
         roomType: formData.roomType,
         projectType: formData.projectType,
         budgetRange: formData.budgetRange,
-        imageUrl,
-        imagePath
+        imageUrl
       };
 
       if (editItem?.id) {

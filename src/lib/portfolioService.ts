@@ -1,21 +1,4 @@
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  updateDoc, 
-  deleteDoc, 
-  doc,
-  query,
-  orderBy,
-  Timestamp
-} from "firebase/firestore";
-import { 
-  ref, 
-  uploadBytes, 
-  getDownloadURL, 
-  deleteObject 
-} from "firebase/storage";
-import { db, storage } from "./firebase";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface PortfolioItem {
   id?: string;
@@ -24,60 +7,36 @@ export interface PortfolioItem {
   projectType: string;
   budgetRange: string;
   imageUrl: string;
-  imagePath?: string;
   createdAt?: Date;
 }
 
-const COLLECTION_NAME = "portfolio";
-
-// Helper to add timeout to promises
-const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMsg: string): Promise<T> => {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => 
-      setTimeout(() => reject(new Error(errorMsg)), timeoutMs)
-    )
-  ]);
-};
-
-// Upload image to Firebase Storage
+// Upload image to Supabase Storage
 export const uploadImage = async (file: File): Promise<{ url: string; path: string }> => {
   const timestamp = Date.now();
   const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-  const path = `portfolio/${timestamp}_${safeName}`;
-  const storageRef = ref(storage, path);
+  const path = `${timestamp}_${safeName}`;
   
-  try {
-    await withTimeout(
-      uploadBytes(storageRef, file),
-      30000,
-      "Image upload timed out. Please check if Firebase Storage is enabled in your Firebase Console."
-    );
-    
-    const url = await withTimeout(
-      getDownloadURL(storageRef),
-      10000,
-      "Failed to get image URL. Please try again."
-    );
-    
-    return { url, path };
-  } catch (error: any) {
-    if (error?.code === 'storage/unauthorized') {
-      throw new Error("Storage access denied. Please update Firebase Storage security rules to allow uploads.");
-    }
-    if (error?.code === 'storage/object-not-found') {
-      throw new Error("Firebase Storage is not configured. Please enable Storage in Firebase Console.");
-    }
-    throw error;
+  const { data, error } = await supabase.storage
+    .from('portfolio')
+    .upload(path, file);
+  
+  if (error) {
+    console.error("Upload error:", error);
+    throw new Error("Failed to upload image. Please try again.");
   }
+  
+  const { data: urlData } = supabase.storage
+    .from('portfolio')
+    .getPublicUrl(path);
+  
+  return { url: urlData.publicUrl, path };
 };
 
-// Delete image from Firebase Storage
+// Delete image from Supabase Storage
 export const deleteImage = async (imagePath: string): Promise<void> => {
   if (!imagePath) return;
   try {
-    const storageRef = ref(storage, imagePath);
-    await deleteObject(storageRef);
+    await supabase.storage.from('portfolio').remove([imagePath]);
   } catch (error) {
     console.error("Error deleting image:", error);
   }
@@ -85,54 +44,67 @@ export const deleteImage = async (imagePath: string): Promise<void> => {
 
 // Get all portfolio items
 export const getPortfolioItems = async (): Promise<PortfolioItem[]> => {
-  try {
-    const q = query(collection(db, COLLECTION_NAME), orderBy("createdAt", "desc"));
-    const querySnapshot = await withTimeout(
-      getDocs(q),
-      15000,
-      "Failed to load portfolio. Please check if Firestore database exists in Firebase Console."
-    );
-    
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate()
-    })) as PortfolioItem[];
-  } catch (error: any) {
-    if (error?.message?.includes('not exist') || error?.code === 'not-found') {
-      throw new Error("Firestore database not found. Please create it in Firebase Console.");
-    }
-    throw error;
+  const { data, error } = await supabase
+    .from('portfolio_items')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error("Error fetching portfolio:", error);
+    throw new Error("Failed to load portfolio items.");
   }
+  
+  return (data || []).map(item => ({
+    id: item.id,
+    title: item.title,
+    roomType: item.room_type,
+    projectType: item.project_type,
+    budgetRange: item.budget_range,
+    imageUrl: item.image_url,
+    createdAt: new Date(item.created_at)
+  }));
 };
 
 // Add a new portfolio item
 export const addPortfolioItem = async (item: Omit<PortfolioItem, 'id' | 'createdAt'>): Promise<string> => {
-  try {
-    const docRef = await withTimeout(
-      addDoc(collection(db, COLLECTION_NAME), {
-        ...item,
-        createdAt: Timestamp.now()
-      }),
-      15000,
-      "Failed to save portfolio item. Please check if Firestore database exists in Firebase Console."
-    );
-    return docRef.id;
-  } catch (error: any) {
-    if (error?.message?.includes('not exist') || error?.code === 'not-found') {
-      throw new Error("Firestore database not found. Please create it in Firebase Console.");
-    }
-    if (error?.code === 'permission-denied') {
-      throw new Error("Permission denied. Please update Firestore security rules.");
-    }
-    throw error;
+  const { data, error } = await supabase
+    .from('portfolio_items')
+    .insert({
+      title: item.title,
+      room_type: item.roomType,
+      project_type: item.projectType,
+      budget_range: item.budgetRange,
+      image_url: item.imageUrl
+    })
+    .select('id')
+    .single();
+  
+  if (error) {
+    console.error("Error adding portfolio item:", error);
+    throw new Error("Failed to save portfolio item.");
   }
+  
+  return data.id;
 };
 
 // Update a portfolio item
 export const updatePortfolioItem = async (id: string, item: Partial<PortfolioItem>): Promise<void> => {
-  const docRef = doc(db, COLLECTION_NAME, id);
-  await updateDoc(docRef, item);
+  const updateData: Record<string, any> = {};
+  if (item.title !== undefined) updateData.title = item.title;
+  if (item.roomType !== undefined) updateData.room_type = item.roomType;
+  if (item.projectType !== undefined) updateData.project_type = item.projectType;
+  if (item.budgetRange !== undefined) updateData.budget_range = item.budgetRange;
+  if (item.imageUrl !== undefined) updateData.image_url = item.imageUrl;
+
+  const { error } = await supabase
+    .from('portfolio_items')
+    .update(updateData)
+    .eq('id', id);
+  
+  if (error) {
+    console.error("Error updating portfolio item:", error);
+    throw new Error("Failed to update portfolio item.");
+  }
 };
 
 // Delete a portfolio item
@@ -140,8 +112,16 @@ export const deletePortfolioItem = async (id: string, imagePath?: string): Promi
   if (imagePath) {
     await deleteImage(imagePath);
   }
-  const docRef = doc(db, COLLECTION_NAME, id);
-  await deleteDoc(docRef);
+  
+  const { error } = await supabase
+    .from('portfolio_items')
+    .delete()
+    .eq('id', id);
+  
+  if (error) {
+    console.error("Error deleting portfolio item:", error);
+    throw new Error("Failed to delete portfolio item.");
+  }
 };
 
 // Room type options for filters

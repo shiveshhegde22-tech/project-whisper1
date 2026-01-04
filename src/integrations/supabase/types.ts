@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      portfolio_items: {
+        Row: {
+          budget_range: string
+          created_at: string
+          id: string
+          image_url: string
+          project_type: string
+          room_type: string
+          title: string
+        }
+        Insert: {
+          budget_range: string
+          created_at?: string
+          id?: string
+          image_url: string
+          project_type: string
+          room_type: string
+          title: string
+        }
+        Update: {
+          budget_range?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          project_type?: string
+          room_type?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          budget_range: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          project_details: string | null
+          project_type: string
+          status: string
+          submitted_at: string
+        }
+        Insert: {
+          budget_range: string
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          project_details?: string | null
+          project_type: string
+          status?: string
+          submitted_at?: string
+        }
+        Update: {
+          budget_range?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          project_details?: string | null
+          project_type?: string
+          status?: string
+          submitted_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
