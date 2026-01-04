@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Submission, SubmissionStatus } from '@/lib/mockData';
+import { Submission } from '@/lib/submissionsService';
 import { StatusBadge } from '@/components/dashboard/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,8 +19,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { Search, Download, Eye, Filter, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Search, Download, Eye, X } from 'lucide-react';
+
+type SubmissionStatus = 'new' | 'replied' | 'archived';
 
 interface SubmissionsTableProps {
   submissions: Submission[];
@@ -40,7 +41,7 @@ export function SubmissionsTable({ submissions, onViewSubmission }: SubmissionsT
     return submissions.filter(sub => {
       const matchesSearch = 
         searchQuery === '' ||
-        sub.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        sub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         sub.email.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
@@ -53,8 +54,8 @@ export function SubmissionsTable({ submissions, onViewSubmission }: SubmissionsT
   const handleExportCSV = () => {
     const headers = ['Date', 'Name', 'Email', 'Phone', 'Project Type', 'Budget', 'Status', 'Details'];
     const rows = filteredSubmissions.map(sub => [
-      format(sub.createdAt, 'yyyy-MM-dd HH:mm'),
-      sub.fullName,
+      format(sub.submittedAt, 'yyyy-MM-dd HH:mm'),
+      sub.name,
       sub.email,
       sub.phone,
       sub.projectType,
@@ -165,9 +166,9 @@ export function SubmissionsTable({ submissions, onViewSubmission }: SubmissionsT
                   onClick={() => onViewSubmission(submission)}
                 >
                   <TableCell className="text-sm text-muted-foreground">
-                    {format(submission.createdAt, 'MMM d, yyyy')}
+                    {format(submission.submittedAt, 'MMM d, yyyy')}
                   </TableCell>
-                  <TableCell className="font-medium">{submission.fullName}</TableCell>
+                  <TableCell className="font-medium">{submission.name}</TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
                     {submission.email}
                   </TableCell>

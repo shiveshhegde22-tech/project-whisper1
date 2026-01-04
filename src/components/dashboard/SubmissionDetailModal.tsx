@@ -1,4 +1,4 @@
-import { Submission, SubmissionStatus } from '@/lib/mockData';
+import { Submission } from '@/lib/submissionsService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,16 +14,14 @@ import {
   Reply,
   Archive,
   ChevronLeft,
-  ChevronRight,
-  X
+  ChevronRight
 } from 'lucide-react';
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
 
 interface SubmissionDetailModalProps {
   submission: Submission | null;
   onClose: () => void;
-  onStatusChange: (id: string, status: SubmissionStatus) => void;
+  onStatusChange: (id: string, status: Submission['status']) => void;
   onAddNote: (id: string, note: string) => void;
   onNavigate: (direction: 'prev' | 'next') => void;
   hasPrev: boolean;
@@ -55,8 +53,10 @@ export function SubmissionDetailModal({
     { icon: Phone, label: 'Phone', value: submission.phone },
     { icon: Home, label: 'Project Type', value: submission.projectType },
     { icon: Wallet, label: 'Budget Range', value: submission.budgetRange },
-    { icon: Calendar, label: 'Submitted', value: format(submission.createdAt, 'PPP p') },
+    { icon: Calendar, label: 'Submitted', value: format(submission.submittedAt, 'PPP p') },
   ];
+
+  const notesArray = submission.notes ? submission.notes.split('\n').filter(n => n.trim()) : [];
 
   return (
     <Dialog open={!!submission} onOpenChange={() => onClose()}>
@@ -66,12 +66,12 @@ export function SubmissionDetailModal({
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
                 <span className="text-lg font-medium text-accent-foreground">
-                  {submission.fullName.split(' ').map(n => n[0]).join('')}
+                  {submission.name.split(' ').map(n => n[0]).join('')}
                 </span>
               </div>
               <div>
                 <DialogTitle className="font-display text-xl">
-                  {submission.fullName}
+                  {submission.name}
                 </DialogTitle>
                 <StatusBadge status={submission.status} />
               </div>
@@ -129,9 +129,9 @@ export function SubmissionDetailModal({
           {/* Internal Notes */}
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Internal Notes</h4>
-            {submission.notes.length > 0 ? (
+            {notesArray.length > 0 ? (
               <div className="space-y-2">
-                {submission.notes.map((note, index) => (
+                {notesArray.map((note, index) => (
                   <div 
                     key={index} 
                     className="text-sm bg-accent/50 rounded-lg px-3 py-2 text-accent-foreground"
