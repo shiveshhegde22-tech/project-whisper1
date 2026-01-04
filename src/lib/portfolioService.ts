@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { externalSupabase } from "@/lib/externalSupabase";
 
 export interface PortfolioItem {
   id?: string;
@@ -16,7 +16,7 @@ export const uploadImage = async (file: File): Promise<{ url: string; path: stri
   const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
   const path = `${timestamp}_${safeName}`;
   
-  const { data, error } = await supabase.storage
+  const { data, error } = await externalSupabase.storage
     .from('portfolio')
     .upload(path, file);
   
@@ -25,7 +25,7 @@ export const uploadImage = async (file: File): Promise<{ url: string; path: stri
     throw new Error("Failed to upload image. Please try again.");
   }
   
-  const { data: urlData } = supabase.storage
+  const { data: urlData } = externalSupabase.storage
     .from('portfolio')
     .getPublicUrl(path);
   
@@ -36,7 +36,7 @@ export const uploadImage = async (file: File): Promise<{ url: string; path: stri
 export const deleteImage = async (imagePath: string): Promise<void> => {
   if (!imagePath) return;
   try {
-    await supabase.storage.from('portfolio').remove([imagePath]);
+    await externalSupabase.storage.from('portfolio').remove([imagePath]);
   } catch (error) {
     console.error("Error deleting image:", error);
   }
@@ -44,7 +44,7 @@ export const deleteImage = async (imagePath: string): Promise<void> => {
 
 // Get all portfolio items
 export const getPortfolioItems = async (): Promise<PortfolioItem[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await externalSupabase
     .from('portfolio_items')
     .select('*')
     .order('created_at', { ascending: false });
@@ -54,7 +54,7 @@ export const getPortfolioItems = async (): Promise<PortfolioItem[]> => {
     throw new Error("Failed to load portfolio items.");
   }
   
-  return (data || []).map(item => ({
+  return (data || []).map((item: any) => ({
     id: item.id,
     title: item.title,
     roomType: item.room_type,
@@ -67,7 +67,7 @@ export const getPortfolioItems = async (): Promise<PortfolioItem[]> => {
 
 // Add a new portfolio item
 export const addPortfolioItem = async (item: Omit<PortfolioItem, 'id' | 'createdAt'>): Promise<string> => {
-  const { data, error } = await supabase
+  const { data, error } = await externalSupabase
     .from('portfolio_items')
     .insert({
       title: item.title,
@@ -96,7 +96,7 @@ export const updatePortfolioItem = async (id: string, item: Partial<PortfolioIte
   if (item.budgetRange !== undefined) updateData.budget_range = item.budgetRange;
   if (item.imageUrl !== undefined) updateData.image_url = item.imageUrl;
 
-  const { error } = await supabase
+  const { error } = await externalSupabase
     .from('portfolio_items')
     .update(updateData)
     .eq('id', id);
@@ -113,7 +113,7 @@ export const deletePortfolioItem = async (id: string, imagePath?: string): Promi
     await deleteImage(imagePath);
   }
   
-  const { error } = await supabase
+  const { error } = await externalSupabase
     .from('portfolio_items')
     .delete()
     .eq('id', id);
