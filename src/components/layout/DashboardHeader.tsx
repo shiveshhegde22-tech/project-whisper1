@@ -5,7 +5,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getFirebaseSubmissions, Submission } from '@/lib/firebaseSubmissionsService';
+import { db } from '@/lib/firebase';
+import { collection, query, where, orderBy, onSnapshot, limit } from 'firebase/firestore';
+import { Submission } from '@/lib/firebaseSubmissionsService';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,17 +34,48 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
   const [newSubmissions, setNewSubmissions] = useState<Submission[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
+  // Real-time listener for new submissions
   useEffect(() => {
-    const loadNewSubmissions = async () => {
-      try {
-        const submissions = await getFirebaseSubmissions();
-        const newOnes = submissions.filter(s => s.status === 'new').slice(0, 5);
-        setNewSubmissions(newOnes);
-      } catch (error) {
-        console.error("Error loading submissions:", error);
+    const submissionsRef = collection(db, 'contacts');
+    const q = query(
+      submissionsRef,
+      where('status', '==', 'new'),
+      orderBy('createdAt', 'desc'),
+      limit(5)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const submissions: Submission[] = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          projectType: data.projectType || '',
+          budgetRange: data.budget || data.budgetRange || '',
+          projectDetails: data.message || data.projectDetails || '',
+          status: 'new' as const,
+          submittedAt: data.createdAt?.toDate?.() || new Date(),
+          notes: data.notes
+        };
+      });
+      
+      // Show toast if there's a new submission (only after initial load)
+      if (newSubmissions.length > 0 && submissions.length > newSubmissions.length) {
+        const newest = submissions[0];
+        toast({
+          title: "🔔 New Submission",
+          description: `${newest.name} just submitted a contact request`,
+        });
       }
-    };
-    loadNewSubmissions();
+      
+      setNewSubmissions(submissions);
+    }, (error) => {
+      console.error("Error listening to submissions:", error);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
