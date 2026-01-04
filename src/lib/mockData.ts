@@ -119,3 +119,42 @@ export function getSubmissionStats(submissions: Submission[]) {
     responseRate: Math.round((repliedSubmissions / total) * 100),
   };
 }
+
+// Helper function to generate weekly data from submissions with flexible date field
+export function generateWeeklyData(submissions: { submittedAt?: Date; createdAt?: Date }[]): { week: string; count: number }[] {
+  const now = new Date();
+  const weeklyData: { week: string; count: number }[] = [];
+  
+  for (let i = 7; i >= 0; i--) {
+    const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+    const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+    const count = submissions.filter(s => {
+      const date = s.submittedAt || s.createdAt || new Date();
+      return date >= weekStart && date < weekEnd;
+    }).length;
+    weeklyData.push({
+      week: weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      count,
+    });
+  }
+  
+  return weeklyData;
+}
+
+// Generate project type counts from any submission array
+export function generateProjectTypeCounts(submissions: { projectType: string }[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  submissions.forEach(s => {
+    counts[s.projectType] = (counts[s.projectType] || 0) + 1;
+  });
+  return counts;
+}
+
+// Generate budget counts from any submission array
+export function generateBudgetCounts(submissions: { budgetRange: string }[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  submissions.forEach(s => {
+    counts[s.budgetRange] = (counts[s.budgetRange] || 0) + 1;
+  });
+  return counts;
+}

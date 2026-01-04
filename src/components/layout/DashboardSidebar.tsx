@@ -6,7 +6,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Image
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ interface DashboardSidebarProps {
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/' },
   { icon: Inbox, label: 'Submissions', path: '/submissions' },
+  { icon: Image, label: 'Portfolio', path: '/portfolio' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];

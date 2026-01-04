@@ -1,4 +1,4 @@
-import { Submission } from '@/lib/mockData';
+import { Submission } from '@/lib/submissionsService';
 import { StatusBadge } from './StatusBadge';
 import { formatDistanceToNow } from 'date-fns';
 import { Eye } from 'lucide-react';
@@ -29,11 +29,11 @@ export function RecentSubmissions({ submissions, onViewSubmission }: RecentSubmi
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
                   <span className="text-sm font-medium text-accent-foreground">
-                    {submission.fullName.split(' ').map(n => n[0]).join('')}
+                    {submission.name.split(' ').map(n => n[0]).join('')}
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-sm truncate">{submission.fullName}</p>
+                  <p className="font-medium text-sm truncate">{submission.name}</p>
                   <p className="text-xs text-muted-foreground truncate">
                     {submission.projectType} • {submission.budgetRange}
                   </p>
@@ -44,7 +44,7 @@ export function RecentSubmissions({ submissions, onViewSubmission }: RecentSubmi
               <div className="text-right hidden sm:block">
                 <StatusBadge status={submission.status} />
                 <p className="text-xs text-muted-foreground mt-1">
-                  {formatDistanceToNow(submission.createdAt, { addSuffix: true })}
+                  {formatDistanceToNow(submission.submittedAt, { addSuffix: true })}
                 </p>
               </div>
               <Button 
@@ -58,6 +58,11 @@ export function RecentSubmissions({ submissions, onViewSubmission }: RecentSubmi
             </div>
           </div>
         ))}
+        {recentFive.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground">
+            No submissions yet
+          </div>
+        )}
       </div>
     </div>
   );
