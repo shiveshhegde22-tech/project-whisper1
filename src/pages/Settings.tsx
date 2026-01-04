@@ -20,7 +20,7 @@ export default function Settings() {
   const [instantAlerts, setInstantAlerts] = useState(false);
   const [dailyDigest, setDailyDigest] = useState(true);
   const [notificationEmail, setNotificationEmail] = useState("kdmistryinteriors@yahoo.com");
-  const [ccEmail, setCcEmail] = useState("");
+  
   const [statusLabels, setStatusLabels] = useState({
     new: "New",
     replied: "Replied",
@@ -35,7 +35,7 @@ export default function Settings() {
         setInstantAlerts(settings.instantAlerts);
         setDailyDigest(settings.dailyDigest);
         setNotificationEmail(settings.notificationEmail);
-        setCcEmail(settings.ccEmail);
+        
         setStatusLabels(settings.statusLabels);
       } catch (error) {
         console.error("Error loading settings:", error);
@@ -54,7 +54,7 @@ export default function Settings() {
         instantAlerts,
         dailyDigest,
         notificationEmail,
-        ccEmail,
+        
         statusLabels
       });
       toast({
@@ -204,16 +204,6 @@ export default function Settings() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="cc-email" className="text-sm">CC Email (Optional)</Label>
-            <Input 
-              id="cc-email"
-              type="email"
-              placeholder="team@example.com"
-              value={ccEmail}
-              onChange={(e) => setCcEmail(e.target.value)}
-            />
-          </div>
         </div>
       </div>
 
