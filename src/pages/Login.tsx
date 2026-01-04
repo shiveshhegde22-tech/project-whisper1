@@ -45,42 +45,42 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary/5 flex-col justify-center px-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-primary/5 flex-col justify-center px-8 xl:px-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
         <div className="relative z-10">
-          <h1 className="font-display text-4xl font-bold text-foreground mb-4">
+          <h1 className="font-display text-3xl xl:text-4xl font-bold text-foreground mb-4">
             Kirti Mistry
           </h1>
-          <p className="text-lg text-primary font-medium mb-8">INTERIOR DESIGN</p>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-md">
+          <p className="text-base xl:text-lg text-primary font-medium mb-6 xl:mb-8">INTERIOR DESIGN</p>
+          <p className="text-lg xl:text-xl text-muted-foreground leading-relaxed max-w-md">
             Welcome to your design studio dashboard. Manage your portfolio, track client submissions, and analyze your business—all in one place.
           </p>
           
-          <div className="mt-16 p-6 bg-background/50 backdrop-blur-sm rounded-lg border border-border/50">
-            <p className="text-muted-foreground italic">
+          <div className="mt-12 xl:mt-16 p-4 xl:p-6 bg-background/50 backdrop-blur-sm rounded-lg border border-border/50">
+            <p className="text-muted-foreground italic text-sm xl:text-base">
               "The best rooms have something to say about the people who live in them."
             </p>
-            <p className="text-sm text-primary mt-2">— David Hicks</p>
+            <p className="text-xs xl:text-sm text-primary mt-2">— David Hicks</p>
           </div>
         </div>
       </div>
 
       {/* Right side - Login */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-24">
         <div className="max-w-md mx-auto w-full">
           {/* Mobile branding */}
-          <div className="lg:hidden text-center mb-12">
-            <h1 className="font-display text-3xl font-bold text-foreground mb-2">
+          <div className="lg:hidden text-center mb-8 sm:mb-12">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
               Kirti Mistry
             </h1>
-            <p className="text-primary font-medium">INTERIOR DESIGN</p>
+            <p className="text-primary font-medium text-sm sm:text-base">INTERIOR DESIGN</p>
           </div>
 
-          <div className="text-center lg:text-left mb-8">
-            <h2 className="text-2xl font-display font-semibold text-foreground mb-2">
+          <div className="text-center lg:text-left mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-foreground mb-2">
               Welcome Back
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Sign in to access your dashboard
             </p>
           </div>
@@ -88,17 +88,17 @@ export default function Login() {
           <Button
             onClick={handleSignIn}
             disabled={isSigningIn}
-            className="w-full h-12 text-base"
+            className="w-full h-11 sm:h-12 text-sm sm:text-base"
             size="lg"
           >
             {isSigningIn ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
                 Signing in...
               </>
             ) : (
               <>
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -121,7 +121,7 @@ export default function Login() {
             )}
           </Button>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground mt-6 sm:mt-8">
             Only authorized administrators can access this dashboard.
           </p>
         </div>

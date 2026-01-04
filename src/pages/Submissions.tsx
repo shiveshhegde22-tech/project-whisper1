@@ -99,10 +99,10 @@ export default function Submissions() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <div>
-        <h2 className="font-display text-2xl font-semibold">All Submissions</h2>
-        <p className="text-muted-foreground mt-1">View and manage all project inquiries</p>
+        <h2 className="font-display text-xl sm:text-2xl font-semibold">All Submissions</h2>
+        <p className="text-sm text-muted-foreground mt-1">View and manage all project inquiries</p>
       </div>
 
       <SubmissionsTable 

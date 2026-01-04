@@ -6,12 +6,12 @@ interface SubmissionsChartProps {
 
 export function SubmissionsChart({ data }: SubmissionsChartProps) {
   return (
-    <div className="card-elevated p-5">
-      <div className="mb-6">
-        <h3 className="font-display text-lg font-semibold">Submissions Over Time</h3>
-        <p className="text-sm text-muted-foreground mt-0.5">Weekly inquiry trends</p>
+    <div className="card-elevated p-4 sm:p-5">
+      <div className="mb-4 sm:mb-6">
+        <h3 className="font-display text-base sm:text-lg font-semibold">Submissions Over Time</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Weekly inquiry trends</p>
       </div>
-      <div className="h-64">
+      <div className="h-48 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
             <defs>
@@ -25,14 +25,16 @@ export function SubmissionsChart({ data }: SubmissionsChartProps) {
               dataKey="week" 
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'hsl(25 15% 45%)', fontSize: 11 }}
+              tick={{ fill: 'hsl(25 15% 45%)', fontSize: 10 }}
               dy={10}
+              interval="preserveStartEnd"
             />
             <YAxis 
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'hsl(25 15% 45%)', fontSize: 11 }}
+              tick={{ fill: 'hsl(25 15% 45%)', fontSize: 10 }}
               dx={-10}
+              width={35}
             />
             <Tooltip
               contentStyle={{
@@ -40,6 +42,7 @@ export function SubmissionsChart({ data }: SubmissionsChartProps) {
                 border: '1px solid hsl(30 20% 85%)',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px hsl(25 30% 15% / 0.1)',
+                fontSize: '12px',
               }}
               labelStyle={{ color: 'hsl(25 30% 15%)', fontWeight: 500 }}
             />

@@ -91,14 +91,14 @@ export default function Portfolio() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl font-display font-semibold text-foreground">
+          <h1 className="text-xl sm:text-2xl font-display font-semibold text-foreground">
             Portfolio
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage and showcase your interior design projects
           </p>
         </div>
@@ -106,11 +106,13 @@ export default function Portfolio() {
           <Button
             variant={isManageMode ? "default" : "outline"}
             onClick={() => setIsManageMode(!isManageMode)}
+            size="sm"
+            className="flex-1 sm:flex-none"
           >
             <Settings2 className="w-4 h-4 mr-2" />
             {isManageMode ? 'Done' : 'Manage'}
           </Button>
-          <Button onClick={() => setIsFormOpen(true)}>
+          <Button onClick={() => setIsFormOpen(true)} size="sm" className="flex-1 sm:flex-none">
             <Plus className="w-4 h-4 mr-2" />
             Add Project
           </Button>
@@ -137,7 +139,7 @@ export default function Portfolio() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredItems.map((item) => (
             <PortfolioCard
               key={item.id}
