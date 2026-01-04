@@ -62,31 +62,31 @@ export default function Settings() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-2xl">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-2xl">
       <div>
-        <h2 className="font-display text-2xl font-semibold">Settings</h2>
-        <p className="text-muted-foreground mt-1">Manage your dashboard preferences</p>
+        <h2 className="font-display text-xl sm:text-2xl font-semibold">Settings</h2>
+        <p className="text-sm text-muted-foreground mt-1">Manage your dashboard preferences</p>
       </div>
 
       {/* Notifications */}
-      <div className="card-elevated p-6 space-y-6">
+      <div className="card-elevated p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Bell className="w-5 h-5 text-primary" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold">Notifications</h3>
-            <p className="text-sm text-muted-foreground">Configure how you receive alerts</p>
+            <h3 className="font-display text-base sm:text-lg font-semibold">Notifications</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">Configure how you receive alerts</p>
           </div>
         </div>
 
         <Separator />
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="email-notifications" className="font-medium">Email Notifications</Label>
-              <p className="text-sm text-muted-foreground">Receive updates via email</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <Label htmlFor="email-notifications" className="font-medium text-sm">Email Notifications</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">Receive updates via email</p>
             </div>
             <Switch 
               id="email-notifications"
@@ -95,10 +95,10 @@ export default function Settings() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="instant-alerts" className="font-medium">Instant Alerts</Label>
-              <p className="text-sm text-muted-foreground">Get notified immediately for new submissions</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <Label htmlFor="instant-alerts" className="font-medium text-sm">Instant Alerts</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">Get notified immediately for new submissions</p>
             </div>
             <Switch 
               id="instant-alerts"
@@ -107,10 +107,10 @@ export default function Settings() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="daily-digest" className="font-medium">Daily Digest</Label>
-              <p className="text-sm text-muted-foreground">Receive a summary every morning</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <Label htmlFor="daily-digest" className="font-medium text-sm">Daily Digest</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">Receive a summary every morning</p>
             </div>
             <Switch 
               id="daily-digest"
@@ -122,14 +122,14 @@ export default function Settings() {
       </div>
 
       {/* Email Configuration */}
-      <div className="card-elevated p-6 space-y-6">
+      <div className="card-elevated p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Mail className="w-5 h-5 text-primary" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold">Email Settings</h3>
-            <p className="text-sm text-muted-foreground">Configure email recipients</p>
+            <h3 className="font-display text-base sm:text-lg font-semibold">Email Settings</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">Configure email recipients</p>
           </div>
         </div>
 
@@ -137,7 +137,7 @@ export default function Settings() {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="notification-email">Notification Email</Label>
+            <Label htmlFor="notification-email" className="text-sm">Notification Email</Label>
             <Input 
               id="notification-email"
               type="email"
@@ -147,7 +147,7 @@ export default function Settings() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="cc-email">CC Email (Optional)</Label>
+            <Label htmlFor="cc-email" className="text-sm">CC Email (Optional)</Label>
             <Input 
               id="cc-email"
               type="email"
@@ -158,14 +158,14 @@ export default function Settings() {
       </div>
 
       {/* Status Labels */}
-      <div className="card-elevated p-6 space-y-6">
+      <div className="card-elevated p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Palette className="w-5 h-5 text-primary" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Palette className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold">Status Labels</h3>
-            <p className="text-sm text-muted-foreground">Customize submission statuses</p>
+            <h3 className="font-display text-base sm:text-lg font-semibold">Status Labels</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">Customize submission statuses</p>
           </div>
         </div>
 
@@ -173,42 +173,43 @@ export default function Settings() {
 
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
-            <Input defaultValue="New" className="max-w-xs" />
+            <div className="w-3 h-3 rounded-full bg-green-500 flex-shrink-0" />
+            <Input defaultValue="New" className="flex-1" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-blue-500" />
-            <Input defaultValue="Replied" className="max-w-xs" />
+            <div className="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0" />
+            <Input defaultValue="Replied" className="flex-1" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-gray-400" />
-            <Input defaultValue="Archived" className="max-w-xs" />
+            <div className="w-3 h-3 rounded-full bg-gray-400 flex-shrink-0" />
+            <Input defaultValue="Archived" className="flex-1" />
           </div>
         </div>
       </div>
 
       {/* Data Export */}
-      <div className="card-elevated p-6 space-y-6">
+      <div className="card-elevated p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Download className="w-5 h-5 text-primary" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Download className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-display text-lg font-semibold">Data Export</h3>
-            <p className="text-sm text-muted-foreground">Export all submissions data</p>
+            <h3 className="font-display text-base sm:text-lg font-semibold">Data Export</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">Export all submissions data</p>
           </div>
         </div>
 
         <Separator />
 
         <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Download all submissions data as an Excel file including contact details, project information, and notes.
           </p>
           <Button 
             onClick={handleExportExcel} 
             disabled={isExporting}
             variant="outline"
+            className="w-full sm:w-auto"
           >
             {isExporting ? (
               <>
@@ -226,8 +227,8 @@ export default function Settings() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
-        <Button onClick={handleSave} size="lg">
+      <div className="flex justify-end pb-4">
+        <Button onClick={handleSave} size="lg" className="w-full sm:w-auto">
           Save Changes
         </Button>
       </div>

@@ -45,52 +45,52 @@ export function DashboardHeader({ onMenuClick, sidebarCollapsed }: DashboardHead
     .slice(0, 2) || 'U';
 
   return (
-    <header className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-6">
-      <div className="flex items-center gap-4">
+    <header className="h-14 sm:h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-3 sm:px-6 sticky top-0 z-30">
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
         <Button
           variant="ghost"
           size="icon"
           onClick={onMenuClick}
-          className="lg:hidden"
+          className="lg:hidden flex-shrink-0"
         >
           <Menu className="w-5 h-5" />
         </Button>
-        <div>
-          <h1 className="font-display text-xl font-semibold text-foreground">
-            Contact Submissions Dashboard
+        <div className="min-w-0">
+          <h1 className="font-display text-base sm:text-xl font-semibold text-foreground truncate">
+            Contact Dashboard
           </h1>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground hidden sm:block">
             Manage and track all your project inquiries
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative hidden md:block">
+      <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+        <div className="relative hidden lg:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search submissions..."
-            className="pl-9 w-64 bg-background/50"
+            className="pl-9 w-48 xl:w-64 bg-background/50"
           />
         </div>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="w-5 h-5" />
+        <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10">
+          <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
         </Button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+            <Button variant="ghost" className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full p-0">
               {user?.photoURL ? (
                 <img 
                   src={user.photoURL} 
                   alt={user.displayName || 'User'} 
-                  className="w-8 h-8 rounded-full object-cover"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-medium text-primary">{userInitials}</span>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-xs sm:text-sm font-medium text-primary">{userInitials}</span>
                 </div>
               )}
             </Button>

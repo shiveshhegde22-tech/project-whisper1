@@ -154,12 +154,12 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl">
+          <DialogTitle className="font-display text-lg sm:text-xl">
             {editItem ? 'Edit Portfolio Item' : 'Add Portfolio Item'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             {editItem ? 'Update the details of your portfolio project.' : 'Add a new project to showcase in your portfolio.'}
           </DialogDescription>
         </DialogHeader>
@@ -167,21 +167,21 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Image Upload */}
           <div className="space-y-2">
-            <Label>Project Image *</Label>
+            <Label className="text-sm">Project Image *</Label>
             <div 
-              className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
+              className="border-2 border-dashed border-border rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:border-primary/50 transition-colors"
               onClick={() => document.getElementById('image-upload')?.click()}
             >
               {imagePreview ? (
                 <img 
                   src={imagePreview} 
                   alt="Preview" 
-                  className="w-full h-48 object-cover rounded-lg"
+                  className="w-full h-36 sm:h-48 object-cover rounded-lg"
                 />
               ) : (
-                <div className="py-8">
-                  <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload image</p>
+                <div className="py-6 sm:py-8">
+                  <Upload className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-xs sm:text-sm text-muted-foreground">Click to upload image</p>
                 </div>
               )}
               <input
@@ -196,7 +196,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">Project Title *</Label>
+            <Label htmlFor="title" className="text-sm">Project Title *</Label>
             <Input
               id="title"
               value={formData.title}
@@ -207,7 +207,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
           {/* Room Type */}
           <div className="space-y-2">
-            <Label>Room Type *</Label>
+            <Label className="text-sm">Room Type *</Label>
             <Select 
               value={formData.roomType} 
               onValueChange={(value) => setFormData(prev => ({ ...prev, roomType: value }))}
@@ -225,7 +225,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
           {/* Project Type */}
           <div className="space-y-2">
-            <Label>Project Type *</Label>
+            <Label className="text-sm">Project Type *</Label>
             <Select 
               value={formData.projectType} 
               onValueChange={(value) => setFormData(prev => ({ ...prev, projectType: value }))}
@@ -243,7 +243,7 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
 
           {/* Budget Range */}
           <div className="space-y-2">
-            <Label>Budget Range *</Label>
+            <Label className="text-sm">Budget Range *</Label>
             <Select 
               value={formData.budgetRange} 
               onValueChange={(value) => setFormData(prev => ({ ...prev, budgetRange: value }))}
@@ -259,11 +259,11 @@ export function PortfolioFormModal({ isOpen, onClose, onSuccess, editItem }: Por
             </Select>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4">
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading} className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto">
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

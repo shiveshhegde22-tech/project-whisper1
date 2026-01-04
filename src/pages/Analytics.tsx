@@ -43,14 +43,14 @@ export default function Analytics() {
   const responseRate = submissions.length > 0 ? Math.round((repliedSubmissions / submissions.length) * 100) : 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <div>
-        <h2 className="font-display text-2xl font-semibold">Analytics</h2>
-        <p className="text-muted-foreground mt-1">Insights and trends from your submissions</p>
+        <h2 className="font-display text-xl sm:text-2xl font-semibold">Analytics</h2>
+        <p className="text-sm text-muted-foreground mt-1">Insights and trends from your submissions</p>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           title="Total Inquiries"
           value={stats.total}
@@ -78,30 +78,30 @@ export default function Analytics() {
       <SubmissionsChart data={weeklyData} />
 
       {/* Distribution Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <ProjectTypeChart data={projectTypeCounts} />
         <BudgetChart data={budgetCounts} />
       </div>
 
       {/* Monthly Insights */}
-      <div className="card-elevated p-6">
-        <h3 className="font-display text-lg font-semibold mb-4">Monthly Insights</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center p-4 rounded-lg bg-muted/30">
-            <p className="text-3xl font-display font-semibold text-primary">{Math.round(stats.total / 3) || 0}</p>
-            <p className="text-sm text-muted-foreground mt-1">Avg. Monthly Submissions</p>
+      <div className="card-elevated p-4 sm:p-6">
+        <h3 className="font-display text-base sm:text-lg font-semibold mb-4">Monthly Insights</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div className="text-center p-3 sm:p-4 rounded-lg bg-muted/30">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">{Math.round(stats.total / 3) || 0}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Avg. Monthly Submissions</p>
           </div>
-          <div className="text-center p-4 rounded-lg bg-muted/30">
-            <p className="text-3xl font-display font-semibold text-primary">24h</p>
-            <p className="text-sm text-muted-foreground mt-1">Avg. Response Time</p>
+          <div className="text-center p-3 sm:p-4 rounded-lg bg-muted/30">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">24h</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Avg. Response Time</p>
           </div>
-          <div className="text-center p-4 rounded-lg bg-muted/30">
-            <p className="text-3xl font-display font-semibold text-primary">
+          <div className="text-center p-3 sm:p-4 rounded-lg bg-muted/30">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary truncate px-2">
               {Object.keys(projectTypeCounts).length > 0 
                 ? Object.entries(projectTypeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] 
                 : 'N/A'}
             </p>
-            <p className="text-sm text-muted-foreground mt-1">Most Popular Project</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Most Popular Project</p>
           </div>
         </div>
       </div>

@@ -18,20 +18,20 @@ export function ProjectTypeChart({ data }: ProjectTypeChartProps) {
   const chartData = Object.entries(data).map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="card-elevated p-5">
+    <div className="card-elevated p-4 sm:p-5">
       <div className="mb-4">
-        <h3 className="font-display text-lg font-semibold">Project Type Distribution</h3>
-        <p className="text-sm text-muted-foreground mt-0.5">Breakdown by project category</p>
+        <h3 className="font-display text-base sm:text-lg font-semibold">Project Type Distribution</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Breakdown by project category</p>
       </div>
-      <div className="h-72">
+      <div className="h-56 sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={chartData}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={100}
+              innerRadius={40}
+              outerRadius={70}
               paddingAngle={2}
               dataKey="value"
             >
@@ -44,11 +44,12 @@ export function ProjectTypeChart({ data }: ProjectTypeChartProps) {
                 backgroundColor: 'hsl(40 40% 98%)',
                 border: '1px solid hsl(30 20% 85%)',
                 borderRadius: '8px',
+                fontSize: '12px',
               }}
             />
             <Legend 
-              wrapperStyle={{ fontSize: '12px' }}
-              formatter={(value) => <span className="text-foreground">{value}</span>}
+              wrapperStyle={{ fontSize: '11px' }}
+              formatter={(value) => <span className="text-foreground text-xs">{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
