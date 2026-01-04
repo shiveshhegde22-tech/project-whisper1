@@ -10,6 +10,7 @@ import {
   deleteDoc,
   Timestamp
 } from "firebase/firestore";
+import { sendSubmissionNotification } from "@/lib/notificationService";
 
 export interface Submission {
   id: string;
@@ -69,6 +70,17 @@ export const addFirebaseSubmission = async (submission: Omit<Submission, 'id'>):
       createdAt: Timestamp.fromDate(submission.submittedAt),
       notes: submission.notes
     });
+
+    // Send notification email (fire and forget - don't block submission)
+    sendSubmissionNotification({
+      name: submission.name,
+      email: submission.email,
+      phone: submission.phone,
+      projectType: submission.projectType,
+      budget: submission.budgetRange,
+      message: submission.projectDetails
+    }).catch(err => console.error("Failed to send notification:", err));
+
     return docRef.id;
   } catch (error) {
     console.error("Error adding submission:", error);
