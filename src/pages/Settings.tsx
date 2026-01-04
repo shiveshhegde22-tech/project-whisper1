@@ -18,7 +18,7 @@ export default function Settings() {
   
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [instantAlerts, setInstantAlerts] = useState(false);
-  const [dailyDigest, setDailyDigest] = useState(true);
+  
   const [notificationEmail, setNotificationEmail] = useState("kdmistryinteriors@yahoo.com");
   
   const [statusLabels, setStatusLabels] = useState({
@@ -33,7 +33,7 @@ export default function Settings() {
         const settings = await getFirebaseSettings();
         setEmailNotifications(settings.emailNotifications);
         setInstantAlerts(settings.instantAlerts);
-        setDailyDigest(settings.dailyDigest);
+        
         setNotificationEmail(settings.notificationEmail);
         
         setStatusLabels(settings.statusLabels);
@@ -52,7 +52,7 @@ export default function Settings() {
       await saveFirebaseSettings({
         emailNotifications,
         instantAlerts,
-        dailyDigest,
+        
         notificationEmail,
         
         statusLabels
@@ -164,17 +164,6 @@ export default function Settings() {
             />
           </div>
 
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <Label htmlFor="daily-digest" className="font-medium text-sm">Daily Digest</Label>
-              <p className="text-xs sm:text-sm text-muted-foreground">Receive a summary every morning</p>
-            </div>
-            <Switch 
-              id="daily-digest"
-              checked={dailyDigest}
-              onCheckedChange={setDailyDigest}
-            />
-          </div>
         </div>
       </div>
 
