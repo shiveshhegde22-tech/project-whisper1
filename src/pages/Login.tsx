@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { isEmailAllowed } from '@/lib/allowedEmailsService';
 
 export default function Login() {
   const { user, loading, signIn } = useAuth();
@@ -19,10 +20,7 @@ export default function Login() {
     setIsSigningIn(true);
     try {
       await signIn();
-      toast({
-        title: "Welcome!",
-        description: "You have successfully signed in."
-      });
+      // Don't show success toast here - it will be shown after access check
     } catch (error: any) {
       toast({
         title: "Sign In Failed",
