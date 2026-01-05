@@ -58,7 +58,7 @@ export function DashboardSidebar({ collapsed, onToggle, isMobile }: DashboardSid
           {(!collapsed || isMobile) && (
             <div className="animate-fade-in">
               <h1 className="font-display text-lg font-semibold text-sidebar-foreground">
-                Kirti Mistry
+                Rishi Arts
               </h1>
               <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/60">
                 Interior Design
