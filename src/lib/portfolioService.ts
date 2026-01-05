@@ -136,6 +136,7 @@ export const ROOM_TYPES = [
 
 // Project type options
 export const PROJECT_TYPES = [
+  "1BHK Residence",
   "3BHK Residence",
   "2BHK Residence",
   "Villa",
