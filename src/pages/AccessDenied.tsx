@@ -1,12 +1,15 @@
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ShieldX, LogOut } from "lucide-react";
 
 const AccessDenied = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
+    navigate("/login", { replace: true });
   };
 
   return (
