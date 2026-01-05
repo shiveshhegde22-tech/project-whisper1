@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardHeader } from './DashboardHeader';
 import { SearchProvider } from '@/contexts/SearchContext';
+import { AnimatedOutlet } from './AnimatedOutlet';
 import { cn } from '@/lib/utils';
 
 export function DashboardLayout() {
@@ -52,7 +52,7 @@ export function DashboardLayout() {
             "flex-1 p-4 sm:p-6 overflow-auto",
             isMobile && "pb-20"
           )}>
-            <Outlet />
+            <AnimatedOutlet />
           </main>
         </div>
       </div>
