@@ -12,6 +12,7 @@ import Portfolio from "./pages/Portfolio";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/access-denied" element={<AccessDenied />} />
             <Route
               element={
                 <ProtectedRoute>
