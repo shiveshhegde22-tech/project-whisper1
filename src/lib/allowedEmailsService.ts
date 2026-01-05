@@ -10,7 +10,7 @@ export interface AllowedEmail {
 export const getAllowedEmails = async (): Promise<string[]> => {
   try {
     const querySnapshot = await getDocs(collection(db, "allowed_emails"));
-    return querySnapshot.docs.map(doc => doc.data().email?.toLowerCase() || "");
+    return querySnapshot.docs.map(doc => (doc.data().email || "").trim().toLowerCase());
   } catch (error) {
     console.error("Error fetching allowed emails:", error);
     return [];
